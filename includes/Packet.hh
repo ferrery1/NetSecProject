@@ -4,12 +4,14 @@
 # include <array>
 # include <string>
 # include "NetObj.hh"
+//# include "Proto.hh"
+
 
 class Packet : public NetObj {
 protected:
   void	*hdr;
   int	size;
-
+  //  Proto *prot;
   /*  Packet *_unknownPacket;
   UDPPacket *_udp;
   TCPPacket *_tcp;
