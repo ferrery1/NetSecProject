@@ -29,7 +29,7 @@ private:
   std::map<int, std::string> opcStrings;
   
 public:
-  ARPPacket();
+  ARPPacket(std::string name);
   ~ARPPacket();
   void parsePacket(char *buf);
   void dumpHdr();

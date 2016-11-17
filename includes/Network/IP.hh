@@ -13,7 +13,7 @@ private:
   char *buf[1500];
   
 public:
-  IPPacket();
+  IPPacket(std::string name);
   ~IPPacket();
   void parsePacket(char *buf);
   void dumpHdr();

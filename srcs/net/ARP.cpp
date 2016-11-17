@@ -14,10 +14,12 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
+#include <sstream>
 #include "ARP.hh"
 
 
-ARPPacket::ARPPacket() {
+ARPPacket::ARPPacket(std::string type)
+  : Packet(type) {
   opcStrings.insert(std::pair<int, std::string>(ARPOP_REQUEST, REQUEST_STR));
   opcStrings.insert(std::pair<int,std::string>(ARPOP_REPLY, REPLY_STR));
 }
@@ -25,9 +27,33 @@ ARPPacket::ARPPacket() {
 ARPPacket::~ARPPacket() {
 }
 
-void ARPPacket::parsePacket(char *buf) {
+void					ARPPacket::parsePacket(char *buf) {
+  std::map<std::string, std::string>	parseMap;
+  std::ostringstream			str;
   //memset(this->hdr, 0, sizeof(this->hdr));
+
   this->hdr = (struct arp_hdr*)buf;
+  std::cout << "Type: " << opcStrings[htons(this->hdr->arp_opcode)] << std::endl;
+  std::cout << "Sender HW address " << std::hex << + this->hdr->sha[0] << std::dec << ":" <<
+    std::hex << + this->hdr->sha[1] << std::dec <<":" << 
+    + this->hdr->sha[2] << ":" << 
+    + this->hdr->sha[3] << ":" <<
+    + this->hdr->sha[4] << ":" << 
+    + this->hdr->sha[5]  << std::endl;
+  std::cout << "Sender IP :" << + this->hdr->spa[0] << "." <<
+    + this->hdr->spa[1] << "." << 
+    + this->hdr->spa[2] << "." << 
+    + this->hdr->spa[3] << std::endl;
+  std::cout << "Target HW address " << this->hdr->tha[0] << ":" <<
+    + this->hdr->tha[1] << ":" << 
+    + this->hdr->tha[2] << ":" << 
+    + this->hdr->tha[3] << ":" <<
+    + this->hdr->tha[4] << ":" << 
+    + this->hdr->tha[5] << std::endl;
+  std::cout << "Target IP : " << + this->hdr->tpa[0] << "." <<
+    + this->hdr->tpa[1] << "." << 
+    + this->hdr->tpa[2] << "." << 
+    + this->hdr->tpa[3] << std::endl;  
 }
 
 void ARPPacket::dumpHdr() {
@@ -41,26 +67,7 @@ void ARPPacket::dumpHdr() {
   this->hdr->arp_prot;
   
   std::cout << "OPCODE :" << opcStrings[htons(this->hdr->arp_opcode)] << std::endl;
-  std::cout << "Sender HW address " << std::hex << + this->hdr->sha[0] << std::dec << ":" <<
-    std::hex << + this->hdr->sha[1] << std::dec <<":" << 
-    this->hdr->sha[2] << ":" << 
-    this->hdr->sha[3] << ":" <<
-    this->hdr->sha[4] << ":" << 
-    this->hdr->sha[5]  << std::endl;
-  std::cout << "Sender IP :" << + this->hdr->spa[0] << "." <<
-    + this->hdr->spa[1] << "." << 
-    + this->hdr->spa[2] << "." << 
-    + this->hdr->spa[3] << std::endl;
-  std::cout << "Target HW address " << this->hdr->tha[0] << ":" <<
-    this->hdr->tha[1] << ":" << 
-    this->hdr->tha[2] << ":" << 
-    this->hdr->tha[3] << ":" <<
-    this->hdr->tha[4] << ":" << 
-    this->hdr->tha[5] << std::endl;
-  std::cout << "Target IP : " << + this->hdr->tpa[0] << "." <<
-    + this->hdr->tpa[1] << "." << 
-    + this->hdr->tpa[2] << "." << 
-    + this->hdr->tpa[3] << std::endl;
+
 
   // int i;
   // printf("Sender MAC: ");

@@ -5,36 +5,60 @@
 #include <iostream>
 #include "Frame.hh"
 #include "IP.hh"
+#include "TCP.hh"
+#include "UDP.hh"
+
+IPPacket::IPPacket(std::string type)
+  : Packet(type) {
+}
 
 IPPacket::~IPPacket() {
-}
-
-IPPacket::IPPacket() {
   
 }
+
+/*IPPacket::IPPacket(const IPPacket &p) {
+  }*/
 
 void IPPacket::parsePacket(char *buf) {
-  std::cout << "LOL" << std::endl;
+  std::array<std::string, 4> row;
   std::map<std::string, std::string> parseMap;
+  Packet *p;
   int i;
-  
-  this->hdr = (struct iphdr*)buf;
-  for (i = 0; i < 60; ++i) {
-    if (Frame::tab_tcpip[i].proto_ID == this->hdr->protocol)
-      break;
-  }
-  //  IPPacket *tmp = (IPPacket)(this->_tab_tcpip[i].type)
-  //  IPPacket p = *(this->_tab_tcpip[i]).type;
-  //printf("p: %p, ptr: %p\n", p, *(this->_tab_tcpip[i].type));
   std::string str;
+  int type;
+  std::string name;
+
+  std::cout << "BEGINNING OF PACKET" << std::endl;
+  this->hdr = (struct iphdr*)buf;
+  type = this->hdr->protocol;
+  for (i = 0; (type != this->_tabTcpip[i].proto_ID) && (this->_tabTcpip[i].proto_ID != -1); i++);
+  name = this->_tabTcpip[i].name;
+  
+  switch (type) {
+  case 6:
+    p = new TCPPacket(name);
+    break;
+  case 17:
+    p = new UDPPacket(name);
+    break;
+  default:
+    p = new Packet(name);
+  };
+  p->parsePacket(buf + sizeof(*(this->hdr)));
+  //pkt
+  //p = (IPPacket)(pkt);
+  //  if (p.getType() == "IP") {
+  std::cout << "IP:" << this->hdr->version << std::endl;
+  //}
+  
 
   //  str << "IP" << this->hdr->version;
-  parseMap.insert(std::pair<std::string, std::string>("IP version", str));
-  str.clear();
+  // parseMap.insert(std::pair<std::string, std::string>("IP version", str));
+  //str.clear();
   //  str << "test" << std::endl;
   //str << ((unsigned int)(this->hdr->ihl)) * 4;
   //parseMap.insert("IP Header Length", str);
-  str.clear();
+  //str.clear();
   //str << (unsigned int)this->hdr->tos
   // parseMap.(TOS);
   // parseMap (length);
@@ -44,6 +68,7 @@ void IPPacket::parsePacket(char *buf) {
   // Source IP;
   // Dest IP;
   // this->contents.insert;
+  std::cout << "END OF PACKET" << std::endl;
 }
 
 void IPPacket::dumpHdr() {
@@ -57,7 +82,8 @@ void IPPacket::dumpHdr() {
 }
 
 std::array<std::string, 4>	IPPacket::getRow() {
-  std::array<std::string, 4> row;
+
+
   sockaddr_in src, dst;
   memset(&src, 0, sizeof(src));
   src.sin_addr.s_addr = this->hdr->saddr;
@@ -67,12 +93,20 @@ std::array<std::string, 4>	IPPacket::getRow() {
   row[0] = inet_ntoa(src.sin_addr);
   row[1] = inet_ntoa(dst.sin_addr);  
   int i;
+  //  IPPacket p;
+  //  Proto prot;
+  
+  //  p = prot.getTCPIPProt(this->hdr->protocol);
+  /*if (p.getType() == "IP") {
+    str << "IP:" << this->hdr->version;
+    }*/
 
-  for (i = 0; i < 60; ++i) {
-    if (this->_tab_tcpip[i].proto_ID == this->hdr->protocol)
+  
+  /*  for (i = 0; i < 60; ++i) {
+      if (this->_tab_tcpip[i].proto_ID == this->hdr->protocol)
       break;
-  }
-  row[2] = this->_tab_tcpip[i].name;
+      }*/
+  //  row[2] = this->_tab_tcpip[i].name;
   row[3] = this->size;
   return (row);
 }
